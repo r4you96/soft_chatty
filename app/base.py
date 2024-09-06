@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 
+from app.core.config import config
 from app.domain.response_model import ok_response
 
 
 def create_app():
-    app = FastAPI(title='Soft Chatty API',
+    app = FastAPI(title=f'{config.app_name} API',
                   version='0.1.0',
                   openapi_url='/v1/openapi.json',
                   docs_url='/v1/docs',
