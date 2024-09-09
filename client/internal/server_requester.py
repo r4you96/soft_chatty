@@ -5,7 +5,7 @@ import httpx
 from app.domain.message import Message
 from app.domain.messaging_user import MessagingUser
 from client.core.config import config
-from app.domain.channel import Channel, ChannelCreate
+from app.domain.channel import Channel, ChannelCreate, ChannelForClient
 from client.core.exceptions import ClientException
 
 
@@ -21,13 +21,14 @@ async def create_channel(channel_name: str) -> Channel:
         return Channel(**data)
 
 
-async def find_channel() -> List[Channel]:
+async def find_channel() -> List[ChannelForClient]:
     async with httpx.AsyncClient() as client:
-        r = await client.get(f'{config.socket_url}/v1/channels')
+        r = await client.get(f'{config.socket_url}/v1/channels',
+                             params={'for_client': True})
 
         response = r.json()
         data = response.get('data')
-        return [Channel(**channel) for channel in data]
+        return [ChannelForClient(**channel) for channel in data]
 
 
 async def read_messaging_user_by_user_name(user_name: str):

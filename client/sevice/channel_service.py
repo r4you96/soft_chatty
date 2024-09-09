@@ -26,7 +26,10 @@ async def show_channels():
     }
     print('---channels--')
     for idx, channel in enumerate(channels):
-        print(f'[{idx + 1}] {channel.name}')
+        last_query = channel.last_message.blocks[0].data.query if channel.last_message else None
+        print(f'[{idx + 1}] channel_name: {channel.name} /// '
+              f'active_count:{channel.active_count} /// '
+              f'last_query: {last_query}')
     print('-------')
 
 

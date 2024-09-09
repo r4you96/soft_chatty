@@ -1,8 +1,10 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 from app.domain import gen_id
+from app.domain.message import Message
 
 
 class Channel(BaseModel):
@@ -13,3 +15,8 @@ class Channel(BaseModel):
 
 class ChannelCreate(BaseModel):
     name: str
+
+
+class ChannelForClient(Channel):
+    active_count: int
+    last_message: Optional[Message] = None

@@ -22,6 +22,9 @@ async def create_channel(body: ChannelCreate) -> ResponseModel[Channel]:
 
 
 @router.get('')
-async def find_channels() -> ResponseModel[List[Channel]]:
+async def find_channels(for_client: bool = False):
+    if for_client:
+        channels = await channel_repository.find_channel_for_client()
+        return ResponseModel(data=channels)
     channels = await channel_repository.find_channel()
     return ResponseModel(data=channels)
