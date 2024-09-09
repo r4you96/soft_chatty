@@ -1,14 +1,15 @@
-from typing import Optional
+from typing import Optional, List, Dict
+
+from pydantic import Field, BaseModel
+
+from app.domain.channel import Channel
 
 
-class SocketClientStore:
+class SocketClientStore(BaseModel):
     user_name: Optional[str] = None
-
-    def __init__(self):
-        pass
-
-    def set_user_name(self, user_name: str):
-        self.user_name = user_name
+    messaging_user_id: Optional[str] = None
+    current_channel: Optional[Channel] = None
+    channels: Dict[str, Channel] = Field(default_factory=dict)
 
 
 client_store = SocketClientStore()

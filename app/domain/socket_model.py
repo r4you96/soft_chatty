@@ -1,4 +1,7 @@
-from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class SocketParams(BaseModel):
@@ -7,14 +10,25 @@ class SocketParams(BaseModel):
 
 class SocketSession(BaseModel):
     user_name: str
+    messaging_user_id: str
+    current_channel_id: Optional[str] = None
 
 
 # event models
-class SocketChatEvent(BaseModel):
-    query: str
+class ChannelEventBase(BaseModel):
+    channel_id: str
 
 
-# emit models
-class SocketUserMessage(BaseModel):
+class ChannelOpenEvent(ChannelEventBase):
+    pass
+
+
+class ChannelCloseEvent(ChannelEventBase):
+    pass
+
+
+class ChatEvent(BaseModel):
+    channel_id: str
     user_name: str
     query: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)

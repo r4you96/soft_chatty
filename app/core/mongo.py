@@ -37,11 +37,12 @@ class MongoDB:
                                          authSource=self._auth_source)
         try:
             await self.db.command('ping')
-            print('ping')
+
         except AutoReconnect as e:
             self.client.close()
             logger.error(f'Could not connect to mongodb', exc_info=e)
             sys.exit(0)
+        print('succeed connect mongo')
 
     async def close(self):
         if self.client is not None:
