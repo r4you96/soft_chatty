@@ -2,8 +2,9 @@ from datetime import datetime
 from urllib.parse import parse_qsl, urlsplit
 
 from app.domain.channel_user import ChannelUser, ChannelUserStatus
+from app.domain.message import Message, MessageBlock, MessageBlockType, MessageBlockText
 from app.domain.socket_model import SocketParams, SocketSession, ChatEvent, ChannelOpenEvent, ChannelCloseEvent
-from app.repository import channel_user_repository
+from app.repository import channel_user_repository, message_repository
 from app.service import messaging_user_service, channel_user_service
 from app.socket.base import server_sio
 from app.socket.socket_emitter import SocketServerEventEmitter
@@ -65,8 +66,16 @@ def handle_socket_server_events():
 
     @server_sio.on('chat')
     async def receive_message(sid: str, data: dict):
+        session = await __get_session(sid=sid)
         chat_event = ChatEvent(**data)
         print(f'received message: {chat_event.query}')
 
         event_emitter = SocketServerEventEmitter()
         await event_emitter.emit_message(event=chat_event)
+
+        message = Message(channel_id=chat_event.channel_id,
+                          messaging_user_id=session.messaging_user_id,
+                          user_name=chat_event.user_name,
+                          blocks=[MessageBlock(data_type=MessageBlockType.TEXT,
+                                               data=MessageBlockText(query=chat_event.query))])
+        await message_repository.create(message=message)

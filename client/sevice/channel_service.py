@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from app.domain.message import MessageBlockType
 from app.domain.socket_model import ChannelOpenEvent, ChannelCloseEvent
 from client.core.exceptions import ClientException
 from client.internal import server_requester
@@ -46,6 +49,14 @@ async def open_channel(channel_name: str):
     client_store.current_channel = exist_channel
     print(f'current channel - {channel_name}')
 
+    messages = await server_requester.find_message(channel_id=exist_channel.id)
+    for message in messages:
+        for block in message.blocks:
+            if block.data_type != MessageBlockType.TEXT:
+                continue
+            print(f'{message.user_name}'
+                  f'[{datetime.strftime(message.created_at, "%H:%M:%S")}]: {block.data.query}')
+
 
 async def close_channel():
     if not client_store.current_channel:
@@ -55,4 +66,3 @@ async def close_channel():
     await socket_emitter.close_channel(event=event)
     print(f'current channel - None')
     client_store.current_channel = None
-

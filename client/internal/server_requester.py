@@ -2,6 +2,7 @@ from typing import List
 
 import httpx
 
+from app.domain.message import Message
 from app.domain.messaging_user import MessagingUser
 from client.core.config import config
 from app.domain.channel import Channel, ChannelCreate
@@ -36,3 +37,13 @@ async def read_messaging_user_by_user_name(user_name: str):
         response = r.json()
         data = response.get('data')
         return MessagingUser(**data)
+
+
+async def find_message(channel_id: str) -> List[Message]:
+    async with httpx.AsyncClient() as client:
+        r = await client.get(f'{config.socket_url}/v1/messages',
+                             params={'channel_id': channel_id})
+
+        response = r.json()
+        data = response.get('data')
+        return [Message(**message) for message in data]
