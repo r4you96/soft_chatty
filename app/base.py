@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.config import config
+from app.core.mongo import mongo
 from app.socket.base import server_sio
 from app.domain.response_model import ok_response
 from app.socket.socket_event_handler import handle_socket_server_events
@@ -27,6 +28,14 @@ def create_app():
     @app.get('/health')
     async def check_health():
         return ok_response
+
+    @app.on_event("startup")
+    async def handle_startup():
+        await mongo.connect()
+
+    @app.on_event("shutdown")
+    async def handle_shutdown():
+        await mongo.close()
 
     socket_app = socketio.ASGIApp(socketio_server=server_sio,
                                   other_asgi_app=app)

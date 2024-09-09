@@ -1,6 +1,7 @@
 from urllib.parse import parse_qsl, urlsplit
 
 from app.domain.socket_model import SocketParams, SocketSession, SocketChatEvent, SocketUserMessage
+from app.service import messaging_user_service
 from app.socket.base import server_sio
 from app.socket.socket_emitter import SocketServerEventEmitter
 
@@ -17,14 +18,21 @@ def handle_socket_server_events():
         query_string = environ.get('QUERY_STRING')
         params = dict(parse_qsl(str(urlsplit(query_string).path)))
         connected_params = SocketParams(**params)
-        await server_sio.save_session(sid=sid,
-                                      session={'user_name': connected_params.user_name})
-
         print(f'connected user - {connected_params.user_name}')
+
+        messaging_user = await messaging_user_service.get_or_create_user(user_name=connected_params.user_name)
+        await server_sio.save_session(sid=sid,
+                                      session={'user_name': connected_params.user_name,
+                                               'messaging_user_id': messaging_user.id})
 
         event_emitter = SocketServerEventEmitter()
         await event_emitter.join_broadcast_room(sid=sid)
         await event_emitter.emit_connected()
+
+    @server_sio.event
+    async def disconnect(sid):
+        session = await __get_session(sid=sid)
+        print(f'disconnect - {session.user_name}')
 
     @server_sio.on('chat')
     async def receive_message(sid: str, data: dict):

@@ -4,6 +4,7 @@ import sys
 from client.socket.base import sio
 from client.socket.socket_emitter import SocketClientEmitter
 from client.socket.socket_event_handler import handle_socket_client_events
+from client.socket.store import client_store
 from client.util.async_util import read_input
 
 
@@ -24,6 +25,8 @@ async def handle_input():
 async def run_client():
     print('insert user_name : ')
     user_name = sys.stdin.readline().strip()
+    client_store.set_user_name(user_name=user_name)
+
     await SocketClientEmitter.connect(user_name=user_name)
     handle_socket_client_events()
 

@@ -8,6 +8,7 @@ class SocketClientEmitter:
         url = f'{config.socket_url}?user_name={user_name}'
         await sio.connect(url=url,
                           transports=['websocket'])
+        print('connected server')
 
     @staticmethod
     async def close_socket():

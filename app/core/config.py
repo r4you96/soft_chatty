@@ -10,6 +10,9 @@ PROFILE = os.environ.get("PROFILE", "local")
 
 class Settings(BaseSettings):
     app_name: str
+    mongo_url: str
+    mongo_database: str
+    mongo_auth_source: str
 
     class Config:
         file_path = f'{Path(os.path.dirname(__file__)).parent.parent}/config/server/{PROFILE}.env'
