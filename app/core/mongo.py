@@ -1,5 +1,5 @@
 import sys
-from typing import Optional, Any
+from typing import Optional
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import AutoReconnect

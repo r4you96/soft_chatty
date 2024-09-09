@@ -1,10 +1,8 @@
-from datetime import datetime
 from urllib.parse import parse_qsl, urlsplit
 
-from app.domain.channel_user import ChannelUser, ChannelUserStatus
 from app.domain.message import Message, MessageBlock, MessageBlockType, MessageBlockText
 from app.domain.socket_model import SocketParams, SocketSession, ChatEvent, ChannelOpenEvent, ChannelCloseEvent
-from app.repository import channel_user_repository, message_repository
+from app.repository import message_repository
 from app.service import messaging_user_service, channel_user_service
 from app.socket.base import server_sio
 from app.socket.socket_emitter import SocketServerEventEmitter
